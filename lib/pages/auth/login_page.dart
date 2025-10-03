@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                     hintText: "E-posta",
                     hintStyle: TextStyle(color: textColor.withOpacity(0.6)),
                     filled: true,
-                    fillColor: surface.withOpacity(0.9),
+                    fillColor: surface.withOpacity(0.5),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                     hintText: "Şifre",
                     hintStyle: TextStyle(color: textColor.withOpacity(0.6)),
                     filled: true,
-                    fillColor: surface.withOpacity(0.9),
+                    fillColor: surface.withOpacity(0.5),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -106,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: AppStyles.caption.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
                   ),

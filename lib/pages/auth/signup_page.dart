@@ -59,7 +59,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     hintText: "Ad Soyad",
                     hintStyle: TextStyle(color: textColor.withOpacity(0.6)),
                     filled: true,
-                    fillColor: surface.withOpacity(0.9),
+                    fillColor: surface.withOpacity(0.5),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -77,7 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     hintText: "E-posta",
                     hintStyle: TextStyle(color: textColor.withOpacity(0.6)),
                     filled: true,
-                    fillColor: surface.withOpacity(0.9),
+                    fillColor: surface.withOpacity(0.5),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -96,7 +96,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     hintText: "Şifre",
                     hintStyle: TextStyle(color: textColor.withOpacity(0.6)),
                     filled: true,
-                    fillColor: surface.withOpacity(0.9),
+                    fillColor: surface.withOpacity(0.5),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -115,7 +115,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     hintText: "Şifre Tekrar",
                     hintStyle: TextStyle(color: textColor.withOpacity(0.6)),
                     filled: true,
-                    fillColor: surface.withOpacity(0.9),
+                    fillColor: surface.withOpacity(0.5),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -139,12 +139,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     onPressed: () {
                       // TODO: sign up logic
+                      Navigator.pushReplacementNamed(context, "/home");
                     },
                     child: Text(
                       "Kayıt Ol",
                       style: AppStyles.caption.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
                   ),

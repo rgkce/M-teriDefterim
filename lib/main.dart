@@ -3,6 +3,8 @@ import 'package:musteridefterim/constants/app_theme.dart';
 import 'package:musteridefterim/pages/auth/forgot_password_page.dart';
 import 'package:musteridefterim/pages/auth/login_page.dart';
 import 'package:musteridefterim/pages/auth/signup_page.dart';
+import 'package:musteridefterim/pages/home/home_page.dart';
+import 'package:musteridefterim/pages/home/profile_page.dart';
 import 'package:musteridefterim/pages/splash/splash_screen.dart';
 
 void main() {
@@ -26,7 +28,8 @@ class MyApp extends StatelessWidget {
         "/login": (context) => const LoginPage(),
         "/signup": (context) => const SignUpPage(),
         "/forgot": (context) => const ForgotPasswordPage(),
-        // "/home": (context) => const HomePage(),  // sonra eklenecek
+        "/home": (context) => const HomePage(),
+        "/profile": (context) => const ProfilePage(),
       },
     );
   }
