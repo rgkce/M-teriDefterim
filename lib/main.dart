@@ -3,6 +3,7 @@ import 'package:musteridefterim/constants/app_theme.dart';
 import 'package:musteridefterim/pages/auth/forgot_password_page.dart';
 import 'package:musteridefterim/pages/auth/login_page.dart';
 import 'package:musteridefterim/pages/auth/signup_page.dart';
+import 'package:musteridefterim/pages/home/change_password_page.dart';
 import 'package:musteridefterim/pages/home/home_page.dart';
 import 'package:musteridefterim/pages/home/profile_page.dart';
 import 'package:musteridefterim/pages/splash/splash_screen.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         "/forgot": (context) => const ForgotPasswordPage(),
         "/home": (context) => const HomePage(),
         "/profile": (context) => const ProfilePage(),
+        "/change-password": (context) => const ChangePasswordPage(),
       },
     );
   }
