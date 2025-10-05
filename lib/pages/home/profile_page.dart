@@ -119,7 +119,7 @@ class ProfilePage extends StatelessWidget {
                           color:
                               isDark
                                   ? AppColors.lightSecondary
-                                  : AppColors.darkSecondary,
+                                  : AppColors.darkSecondary.withOpacity(0.8),
                           onPressed:
                               () => _showConfirmationDialog(
                                 context,
@@ -140,7 +140,7 @@ class ProfilePage extends StatelessWidget {
                           color:
                               isDark
                                   ? AppColors.lightPrimary
-                                  : AppColors.darkPrimary,
+                                  : AppColors.darkPrimary.withOpacity(0.8),
                           onPressed:
                               () => _showConfirmationDialog(
                                 context,
@@ -161,7 +161,7 @@ class ProfilePage extends StatelessWidget {
                           color:
                               isDark
                                   ? AppColors.lightAccent
-                                  : AppColors.darkAccent,
+                                  : AppColors.darkAccent.withOpacity(0.8),
                           onPressed:
                               () => _showConfirmationDialog(
                                 context,
