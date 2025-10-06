@@ -18,8 +18,6 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   @override
   void initState() {
     super.initState();
-
-    // Örnek veri (gerçekte backend'den veya local db'den gelecektir)
     transactions = [
       {
         "title": "Saç Kesimi",
@@ -41,13 +39,143 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
       },
     ];
 
-    // Tarihe göre sıralama (en son işlem en üstte)
     transactions.sort((a, b) => b["date"].compareTo(a["date"]));
+  }
+
+  void _showAddTransactionDialog() {
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController descController = TextEditingController();
+    final TextEditingController priceController = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        final screenWidth = MediaQuery.of(context).size.width;
+
+        return AlertDialog(
+          backgroundColor:
+              isDark ? AppColors.darkBackground : AppColors.lightBackground,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            "Yeni İşlem Ekle",
+            style: AppStyles.headline2.copyWith(
+              color: isDark ? AppColors.darkText : AppColors.lightText,
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.05,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildResponsiveTextField(
+                  controller: titleController,
+                  label: "İşlem Adı",
+                  isDark: isDark,
+                  width: screenWidth,
+                ),
+                SizedBox(height: screenWidth * 0.03),
+                _buildResponsiveTextField(
+                  controller: descController,
+                  label: "İşlem Detayı",
+                  isDark: isDark,
+                  width: screenWidth,
+                ),
+                SizedBox(height: screenWidth * 0.03),
+                _buildResponsiveTextField(
+                  controller: priceController,
+                  label: "Ücret (₺)",
+                  isDark: isDark,
+                  width: screenWidth,
+                  keyboard: TextInputType.number,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "İptal",
+                style: AppStyles.caption.copyWith(
+                  color: isDark ? AppColors.lightAccent : AppColors.darkAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.04,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    isDark ? AppColors.lightSecondary : AppColors.darkSecondary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                if (titleController.text.isNotEmpty &&
+                    descController.text.isNotEmpty &&
+                    priceController.text.isNotEmpty) {
+                  setState(() {
+                    transactions.insert(0, {
+                      "title": titleController.text,
+                      "description": descController.text,
+                      "date": DateTime.now(),
+                      "price": double.tryParse(priceController.text) ?? 0,
+                    });
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: Text(
+                "Ekle",
+                style: AppStyles.caption.copyWith(
+                  color: AppColors.lightSurface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.04,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildResponsiveTextField({
+    required TextEditingController controller,
+    required String label,
+    required bool isDark,
+    required double width,
+    TextInputType keyboard = TextInputType.text,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboard,
+      style: TextStyle(
+        color: isDark ? AppColors.darkText : AppColors.lightText,
+        fontSize: width * 0.04,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(
+          color:
+              isDark
+                  ? AppColors.darkText.withOpacity(0.7)
+                  : AppColors.lightText.withOpacity(0.7),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     List<Map<String, dynamic>> filteredTransactions =
         transactions
@@ -77,9 +205,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         child: SafeArea(
           child: Column(
             children: [
-              // Üst Bilgi Alanı
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(screenWidth * 0.04),
                 child: Column(
                   children: [
                     Row(
@@ -91,43 +218,46 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                 isDark
                                     ? AppColors.darkSurface
                                     : AppColors.lightSurface,
-                            size: 30,
+                            size: screenWidth * 0.07,
                           ),
                           onPressed: () {
                             Navigator.pushReplacementNamed(context, '/home');
                           },
                         ),
-                        SizedBox(width: 75),
-                        Text(
-                          widget.customer["name"],
-                          style: AppStyles.headline1.copyWith(
-                            color:
-                                isDark
-                                    ? AppColors.darkSurface
-                                    : AppColors.lightSurface,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
+                        SizedBox(width: screenWidth * 0.15),
+                        Expanded(
+                          child: Text(
+                            widget.customer["name"],
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: AppStyles.headline1.copyWith(
+                              color:
+                                  isDark
+                                      ? AppColors.darkSurface
+                                      : AppColors.lightSurface,
+                              fontSize: screenWidth * 0.065,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 6),
+                    SizedBox(height: screenHeight * 0.01),
                     Text(
                       "Telefon: ${widget.customer["phone"]}",
                       style: AppStyles.bodyText.copyWith(
-                        fontSize: 18,
+                        fontSize: screenWidth * 0.045,
                         color:
                             isDark
                                 ? AppColors.darkSurface.withOpacity(0.8)
                                 : AppColors.lightSurface.withOpacity(0.8),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: screenHeight * 0.005),
                     Text(
-                      "Kayıt Tarihi: ${widget.customer["date"]}",
+                      "Kayıt Tarihi: ${widget.customer["dateAdded"]}",
                       style: AppStyles.caption.copyWith(
-                        fontSize: 18,
+                        fontSize: screenWidth * 0.04,
                         color:
                             isDark
                                 ? AppColors.darkSurface.withOpacity(0.7)
@@ -140,9 +270,9 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
 
               // 🔍 Arama Alanı
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.05,
+                  vertical: screenHeight * 0.01,
                 ),
                 child: Container(
                   decoration: BoxDecoration(
@@ -159,7 +289,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                     style: TextStyle(
                       color:
                           isDark ? AppColors.lightSurface : AppColors.lightText,
-                      fontSize: 16,
+                      fontSize: screenWidth * 0.04,
                     ),
                     decoration: InputDecoration(
                       hintText: "İşlem ara...",
@@ -177,91 +307,82 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                 : AppColors.lightText,
                       ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 14,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.04,
+                        vertical: screenHeight * 0.015,
                       ),
-                      fillColor:
-                          isDark
-                              ? AppColors.lightText.withOpacity(0.5)
-                              : AppColors.darkText.withOpacity(0.5),
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.015),
 
-              // İşlem Listesi
+              // 💳 İşlem Listesi
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                   itemCount: filteredTransactions.length,
                   itemBuilder: (context, index) {
                     final tx = filteredTransactions[index];
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
+                      margin: EdgeInsets.only(bottom: screenHeight * 0.012),
+                      padding: EdgeInsets.all(screenWidth * 0.04),
                       decoration: BoxDecoration(
                         color:
                             isDark
                                 ? AppColors.lightText.withOpacity(0.8)
                                 : AppColors.darkText.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.darkBackground.withOpacity(0.05),
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // İşlem Bilgisi
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                tx["title"],
-                                style: AppStyles.bodyText.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      isDark
-                                          ? AppColors.darkPrimary
-                                          : AppColors.lightPrimary,
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  tx["title"],
+                                  style: AppStyles.bodyText.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: screenWidth * 0.045,
+                                    color:
+                                        isDark
+                                            ? AppColors.darkPrimary
+                                            : AppColors.lightPrimary,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                tx["description"],
-                                style: AppStyles.caption.copyWith(
-                                  fontSize: 15,
-                                  color:
-                                      isDark
-                                          ? AppColors.darkText
-                                          : AppColors.lightText,
+                                SizedBox(height: screenHeight * 0.005),
+                                Text(
+                                  tx["description"],
+                                  style: AppStyles.caption.copyWith(
+                                    fontSize: screenWidth * 0.04,
+                                    color:
+                                        isDark
+                                            ? AppColors.darkText
+                                            : AppColors.lightText,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "${tx["date"].day}.${tx["date"].month}.${tx["date"].year} - ${tx["date"].hour}:${tx["date"].minute.toString().padLeft(2, '0')}",
-                                style: AppStyles.caption.copyWith(
-                                  color:
-                                      isDark
-                                          ? AppColors.darkText
-                                          : AppColors.lightText,
-                                  fontSize: 14,
+                                SizedBox(height: screenHeight * 0.005),
+                                Text(
+                                  "${tx["date"].day}.${tx["date"].month}.${tx["date"].year} - ${tx["date"].hour}:${tx["date"].minute.toString().padLeft(2, '0')}",
+                                  style: AppStyles.caption.copyWith(
+                                    fontSize: screenWidth * 0.035,
+                                    color:
+                                        isDark
+                                            ? AppColors.darkText
+                                            : AppColors.lightText,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                          // Fiyat
                           Text(
                             "${tx["price"]} ₺",
                             style: AppStyles.bodyText.copyWith(
                               fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.045,
                               color:
                                   isDark
                                       ? AppColors.darkPrimary
@@ -278,11 +399,11 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
           ),
         ),
       ),
-      // İşlem Ekle Butonu
+
       floatingActionButton: FloatingActionButton(
         backgroundColor:
             isDark ? AppColors.lightSecondary : AppColors.darkSecondary,
-        onPressed: () => Navigator.pushNamed(context, '/add-customer'),
+        onPressed: _showAddTransactionDialog,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

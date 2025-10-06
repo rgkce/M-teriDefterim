@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musteridefterim/constants/app_colors.dart';
 import 'package:musteridefterim/constants/app_styles.dart';
-import 'package:musteridefterim/navigation/navbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> filteredCustomers = [];
   String _sortOption = "Eklenme Sırası";
   final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -63,11 +63,10 @@ class _HomePageState extends State<HomePage> {
                 ),
               )
               .toList();
-      _sortCustomers(); // mevcut sıralamayı koru
+      _sortCustomers();
     });
   }
 
-  // Yeni Müşteri Ekleme Popup
   void _showAddCustomerPopup(BuildContext context, bool isDark) {
     final TextEditingController nameController = TextEditingController();
     final TextEditingController phoneController = TextEditingController();
@@ -77,12 +76,14 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) {
+        final mediaQuery = MediaQuery.of(context);
+        final height = mediaQuery.size.height;
+        final width = mediaQuery.size.width;
+
         return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
+          padding: EdgeInsets.only(bottom: mediaQuery.viewInsets.bottom),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(width * 0.05),
             decoration: BoxDecoration(
               color:
                   isDark
@@ -91,13 +92,6 @@ class _HomePageState extends State<HomePage> {
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(25),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.darkSurface.withOpacity(0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, -3),
-                ),
-              ],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -105,7 +99,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Center(
                   child: Container(
-                    width: 50,
+                    width: width * 0.15,
                     height: 5,
                     margin: const EdgeInsets.only(bottom: 15),
                     decoration: BoxDecoration(
@@ -118,11 +112,11 @@ class _HomePageState extends State<HomePage> {
                   "Yeni Müşteri Ekle",
                   style: AppStyles.headline1.copyWith(
                     color: isDark ? AppColors.darkText : AppColors.lightText,
-                    fontSize: 22,
+                    fontSize: width * 0.055,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 15),
+                SizedBox(height: height * 0.02),
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
@@ -138,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: height * 0.015),
                 TextField(
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
@@ -155,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: height * 0.025),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -165,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                           isDark
                               ? AppColors.lightSecondary
                               : AppColors.darkSecondary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: EdgeInsets.symmetric(vertical: height * 0.018),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -188,12 +182,11 @@ class _HomePageState extends State<HomePage> {
                       "Ekle",
                       style: AppStyles.caption.copyWith(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: width * 0.045,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -205,11 +198,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
 
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+        key: _scaffoldKey,
         extendBodyBehindAppBar: true,
+        drawer: _buildDrawer(isDark, width, height),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -222,23 +220,30 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           child: SafeArea(
-            child: Column(
-              children: [
-                // Başlık + Menü
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  child: Row(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+              child: Column(
+                children: [
+                  // Üst Menü + Başlık
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      IconButton(
+                        onPressed:
+                            () => _scaffoldKey.currentState?.openDrawer(),
+                        icon: Icon(
+                          Icons.menu_rounded,
+                          color:
+                              isDark ? AppColors.lightText : AppColors.darkText,
+                          size: width * 0.07,
+                        ),
+                      ),
                       Text(
                         "Müşterilerim",
                         style: AppStyles.headline1.copyWith(
                           color:
                               isDark ? AppColors.lightText : AppColors.darkText,
-                          fontSize: 26,
+                          fontSize: width * 0.065,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -260,16 +265,13 @@ class _HomePageState extends State<HomePage> {
                               isDark ? AppColors.lightText : AppColors.darkText,
                         ),
                         itemBuilder:
-                            (context) => [
-                              const PopupMenuItem(
+                            (context) => const [
+                              PopupMenuItem(
                                 value: "Eklenme Sırası",
                                 child: Text("Eklenme Sırası"),
                               ),
-                              const PopupMenuItem(
-                                value: "A-Z",
-                                child: Text("A-Z"),
-                              ),
-                              const PopupMenuItem(
+                              PopupMenuItem(value: "A-Z", child: Text("A-Z")),
+                              PopupMenuItem(
                                 value: "Zaman",
                                 child: Text("Zamana Göre"),
                               ),
@@ -277,112 +279,201 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                ),
 
-                // Arama Alanı
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 8,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color:
-                          isDark
-                              ? AppColors.lightText.withOpacity(0.5)
-                              : AppColors.darkText.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.darkSurface),
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: _filterCustomers,
-                      style: TextStyle(
+                  // Arama Kutusu
+                  Padding(
+                    padding: EdgeInsets.only(top: height * 0.015),
+                    child: Container(
+                      decoration: BoxDecoration(
                         color:
                             isDark
-                                ? AppColors.lightSurface
-                                : AppColors.lightText,
-                        fontSize: 16,
+                                ? AppColors.lightText.withOpacity(0.5)
+                                : AppColors.darkText.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      decoration: InputDecoration(
-                        hintText: "Müşteri ara...",
-                        hintStyle: TextStyle(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: _filterCustomers,
+                        style: TextStyle(
                           color:
                               isDark
                                   ? AppColors.lightSurface
                                   : AppColors.lightText,
+                          fontSize: width * 0.045,
                         ),
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color:
-                              isDark
-                                  ? AppColors.lightSurface
-                                  : AppColors.lightText,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                          vertical: 14,
+                        decoration: InputDecoration(
+                          hintText: "Müşteri ara...",
+                          hintStyle: TextStyle(
+                            color:
+                                isDark
+                                    ? AppColors.lightSurface
+                                    : AppColors.lightText,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color:
+                                isDark
+                                    ? AppColors.lightSurface
+                                    : AppColors.lightText,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: width * 0.04,
+                            vertical: height * 0.015,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                // Liste
-                Expanded(
-                  child:
-                      filteredCustomers.isEmpty
-                          ? Center(
-                            child: Text(
-                              "Müşteri bulunamadı",
-                              style: AppStyles.caption.copyWith(
-                                color:
-                                    isDark
-                                        ? AppColors.darkTextSecondary
-                                        : AppColors.lightTextSecondary,
-                                fontSize: 16,
+                  SizedBox(height: height * 0.02),
+
+                  // Liste
+                  Expanded(
+                    child:
+                        filteredCustomers.isEmpty
+                            ? Center(
+                              child: Text(
+                                "Müşteri bulunamadı",
+                                style: AppStyles.caption.copyWith(
+                                  color:
+                                      isDark
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.lightTextSecondary,
+                                  fontSize: width * 0.04,
+                                ),
                               ),
+                            )
+                            : ListView.builder(
+                              itemCount: filteredCustomers.length,
+                              itemBuilder: (context, index) {
+                                final customer = filteredCustomers[index];
+                                return _buildCustomerCard(
+                                  context,
+                                  customer,
+                                  isDark,
+                                  width,
+                                  height,
+                                );
+                              },
                             ),
-                          )
-                          : ListView.builder(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            itemCount: filteredCustomers.length,
-                            itemBuilder: (context, index) {
-                              final customer = filteredCustomers[index];
-                              return _buildCustomerCard(
-                                context,
-                                customer,
-                                isDark,
-                              );
-                            },
-                          ),
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-
-        // ➕ Popup ile Müşteri Ekleme
         floatingActionButton: FloatingActionButton(
           backgroundColor:
               isDark ? AppColors.lightSecondary : AppColors.darkSecondary,
           onPressed: () => _showAddCustomerPopup(context, isDark),
           child: const Icon(Icons.add, color: Colors.white),
         ),
-
-        bottomNavigationBar: const NavBar(currentIndex: 0),
       ),
     );
   }
 
+  // 🔹 Responsive Drawer
+  Widget _buildDrawer(bool isDark, double width, double height) {
+    return Drawer(
+      backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors:
+                    isDark
+                        ? [AppColors.darkPrimary, AppColors.darkAccent]
+                        : [AppColors.lightPrimary, AppColors.lightAccent],
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                CircleAvatar(
+                  radius: width * 0.09,
+                  backgroundColor: Colors.white24,
+                  child: Icon(
+                    Icons.person,
+                    color:
+                        isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                    size: width * 0.12,
+                  ),
+                ),
+                SizedBox(height: height * 0.015),
+                Text(
+                  "Rümeysa Gökçe",
+                  style: AppStyles.headline1.copyWith(
+                    color:
+                        isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                    fontSize: width * 0.05,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "rumeysa@example.com",
+                  style: AppStyles.caption.copyWith(
+                    color:
+                        isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                    fontSize: width * 0.04,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Menü seçenekleri
+          _drawerTile(Icons.person_add_alt_1, "Yeni Müşteri", () {
+            Navigator.pop(context);
+            _showAddCustomerPopup(context, isDark);
+          }, isDark),
+          _drawerTile(Icons.lock, "Şifre Değiştir", () {
+            Navigator.pushNamed(context, '/change-password');
+          }, isDark),
+          const Divider(),
+          _drawerTile(Icons.delete_forever, "Hesabı Sil", () {
+            Navigator.pushReplacementNamed(context, '/signup');
+          }, isDark),
+          _drawerTile(Icons.logout_rounded, "Çıkış Yap", () {
+            Navigator.pushReplacementNamed(context, '/login');
+          }, isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _drawerTile(
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+    bool isDark,
+  ) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isDark ? AppColors.lightPrimary : AppColors.darkPrimary,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          color: isDark ? AppColors.darkText : AppColors.lightText,
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  // 🔹 Responsive Card
   Widget _buildCustomerCard(
     BuildContext context,
     Map<String, dynamic> customer,
     bool isDark,
+    double width,
+    double height,
   ) {
     return GestureDetector(
       onTap:
@@ -392,70 +483,62 @@ class _HomePageState extends State<HomePage> {
             arguments: customer,
           ),
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        margin: EdgeInsets.symmetric(vertical: height * 0.008),
+        padding: EdgeInsets.symmetric(
+          horizontal: width * 0.04,
+          vertical: height * 0.015,
+        ),
         decoration: BoxDecoration(
           color:
               isDark
-                  ? AppColors.darkSurface.withOpacity(0.7)
+                  ? AppColors.darkSurface.withOpacity(0.6)
                   : AppColors.lightSurface.withOpacity(0.7),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color:
-                isDark
-                    ? AppColors.lightTextSecondary
-                    : AppColors.darkTextSecondary,
-          ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 22,
-                  backgroundColor:
-                      isDark
-                          ? AppColors.lightAccent.withOpacity(0.7)
-                          : AppColors.darkAccent.withOpacity(0.7),
-                  child: Text(
-                    customer["name"][0],
-                    style: TextStyle(
-                      fontSize: 20,
+            CircleAvatar(
+              radius: width * 0.07,
+              backgroundColor:
+                  isDark
+                      ? AppColors.lightAccent.withOpacity(0.7)
+                      : AppColors.darkAccent.withOpacity(0.7),
+              child: Text(
+                customer["name"][0],
+                style: TextStyle(
+                  fontSize: width * 0.06,
+                  color: isDark ? AppColors.darkText : AppColors.lightText,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(width: width * 0.04),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    customer["name"],
+                    style: AppStyles.bodyText.copyWith(
                       color: isDark ? AppColors.darkText : AppColors.lightText,
-                      fontWeight: FontWeight.bold,
+                      fontSize: width * 0.045,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      customer["name"],
-                      style: AppStyles.bodyText.copyWith(
-                        color:
-                            isDark ? AppColors.darkText : AppColors.lightText,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  SizedBox(height: height * 0.004),
+                  Text(
+                    "${customer["dateAdded"].day}.${customer["dateAdded"].month}.${customer["dateAdded"].year}",
+                    style: AppStyles.caption.copyWith(
+                      color: isDark ? AppColors.darkText : AppColors.lightText,
+                      fontSize: width * 0.04,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      "${customer["dateAdded"].day}.${customer["dateAdded"].month}.${customer["dateAdded"].year}",
-                      style: AppStyles.caption.copyWith(
-                        color:
-                            isDark ? AppColors.darkText : AppColors.lightText,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
             Icon(
               Icons.arrow_forward_ios_rounded,
-              size: 18,
+              size: width * 0.045,
               color: isDark ? AppColors.darkText : AppColors.lightText,
             ),
           ],
