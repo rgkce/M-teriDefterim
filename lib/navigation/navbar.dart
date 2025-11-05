@@ -13,7 +13,7 @@ class NavBar extends StatelessWidget {
         Navigator.pushReplacementNamed(context, '/home');
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profile');
+        Navigator.pushReplacementNamed(context, '/randevular');
         break;
     }
   }
@@ -51,7 +51,7 @@ class NavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _navItem(context, 0, Icons.home, "Ana Sayfa"),
-          _navItem(context, 1, Icons.group, "Profil"),
+          _navItem(context, 1, Icons.group, "Randevular"),
         ],
       ),
     );

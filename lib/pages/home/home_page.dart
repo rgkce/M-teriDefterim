@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musteridefterim/constants/app_colors.dart';
 import 'package:musteridefterim/constants/app_styles.dart';
+import 'package:musteridefterim/navigation/navbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -492,6 +493,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () => _showAddOrEditCustomerPopup(context, isDark),
         child: const Icon(Icons.add, color: AppColors.lightSurface),
       ),
+      bottomNavigationBar: const NavBar(currentIndex: 0),
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:musteridefterim/pages/auth/forgot_password_page.dart';
 import 'package:musteridefterim/pages/auth/login_page.dart';
 import 'package:musteridefterim/pages/auth/signup_page.dart';
 import 'package:musteridefterim/pages/home/add_customer_page.dart';
+import 'package:musteridefterim/pages/home/appointment_schedule_page.dart';
 import 'package:musteridefterim/pages/home/change_password_page.dart';
 import 'package:musteridefterim/pages/home/customer_detail_page.dart';
 import 'package:musteridefterim/pages/home/home_page.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
                       as Map<String, dynamic>,
             ),
         "/add-customer": (context) => const AddCustomerPage(),
+        "/randevular": (context) => const AppointmentSchedulePage(),
       },
     );
   }
